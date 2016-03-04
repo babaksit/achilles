@@ -1,0 +1,2 @@
+QR0	X:3.05783	Y:-0.059597	Context:http://qr2.it/Go/323736
+QR1	X:3.2373	Y:-0.0833603	Context:http://www.vdpweb.com

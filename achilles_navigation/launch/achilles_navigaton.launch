@@ -1,0 +1,6 @@
+<launch>
+	<node pkg="achilles_navigation" type="achilles_navigation_node" name="achilles_navigation" output="screen">
+      <rosparam file="$(find achilles_navigation)/config/costmap_common_params.yaml" command="load" ns=""/>
+      <rosparam file="$(find achilles_navigation)/config/global_costmap_params.yaml" command="load" ns=""/>
+   </node>
+</launch>

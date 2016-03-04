@@ -1,0 +1,154 @@
+<launch>
+
+<param name="/use_sim_time" value="false"/>
+
+<node pkg="urg_node" type="urg_node"  name="urg_node" output="screen">
+</node>
+
+<node pkg="hector_pose_estimation" type="pose_estimation" name="pose_estimation"    output="screen"/>
+<node name="rviz" pkg="rviz" type="rviz" />
+  <!-- <node name="fake_localization" pkg="fake_localization" type="fake_localization" respawn="false" /> -->
+  
+<node pkg="hector_mapping" type="hector_mapping" name="hector_mapping"    output="screen">
+
+<param name="pub_map_odom_transform" value="true"/>
+<param name="map_frame" value="odom" />
+<param name="base_frame" value="base_link" />
+<param name="odom_frame" value="base_link" />
+<!-- Map size / start point -->
+<param name="map_resolution" value="0.01"/>
+<param name="map_size" value="2000"/>
+<param name="map_start_x" value="0.5"/>
+<param name="map_start_y" value="0.5" />
+<param name="laser_z_min_value" value="-2" />
+<param name="laser_z_max_value" value="8" />
+<param name="laser_min_dist" value="0.02" />
+<param name="laser_max_dist" value="4" />
+
+
+<!-- Map update parameters -->
+<param name="update_factor_free" value="0.4"/>
+<param name="update_factor_occupied" value="0.7" />    
+<param name="map_update_distance_thresh" value="0.2"/>
+<param name="map_update_angle_thresh" value="0.06" />
+</node>
+<!-- 
+<node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster"      args="0.2 0 0 0 0 0 /base_link /laser 100" />   -->
+
+<!-- <node name="learning_tf" pkg="learning_tf" type="tf_broadcaster" /> -->
+
+<arg name="trajectory_source_frame_name" value="base_link"/> 
+<arg name="trajectory_update_rate" default="4"/>
+<arg name="trajectory_publish_rate" default="0.25"/>
+
+<!-- <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server" output="screen">
+<param name="target_frame_name" type="string" value="/map" />
+<param name="source_frame_name" type="string" value="$(arg trajectory_source_frame_name)" />
+<param name="trajectory_update_rate" type="double" value="$(arg trajectory_update_rate)" />
+<param name="trajectory_publish_rate" type="double" value="$(arg trajectory_publish_rate)" />
+</node>
+
+
+<node pkg="hector_geotiff" type="geotiff_node" name="hector_geotiff_node" output="screen" launch-prefix="nice -n 15">
+<remap from="map" to="/dynamic_map" />
+<param name="map_file_path" type="string" value="$(find Avril)/maps" />
+<param name="map_file_base_name" type="string" value="Kn2c" />
+<param name="geotiff_save_period" type="double" value="5" />
+<param name="draw_background_checkerboard" type="bool" value="true" />
+<param name="draw_free_space_grid" type="bool" value="true" />
+<param name="plugins" type="string" value="hector_geotiff_plugins/TrajectoryMapWriter" />
+</node> -->
+
+	
+ 
+<!--    <node pkg="costmap_2d" type="costmap_2d_node" name="global_costmap" output="screen">
+      <rosparam file="$(find achilles_navigation)/config/costmap_common_params.yaml" command="load" ns="costmap"/>
+      <rosparam file="$(find achilles_navigation)/config/global_costmap_params.yaml" command="load" ns="costmap"/>
+   </node>
+ -->
+<!-- <node pkg="achilles_qr_detector" type="scan_macher_node" name="scan_macher_node" output="screen" /> -->
+<!-- <remap from="scan" to="upscan"/>
+<node pkg="urg_node" type="urg_node" name="urg_node" output="screen">
+	<param name="~serial_port" value="/dev/ttyACM1"/>
+</node>
+<remap from="scan" to="downscan"/>
+<node pkg="urg_node" type="urg_node" name="urg_node1" output="screen">
+	<param name="~serial_port" value="/dev/ttyACM0"/>
+</node> -->
+
+<node pkg="achilles_qr_detector" type="QR_filtering_node"  name="QR_filtering_node" output="screen"/>
+
+
+<node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster"      args="0 0 0 0 0 0 /base_link /laser 100" />  
+
+<!-- <arg name="trajectory_source_frame_name" default="/base_link"/> -->
+   <!-- <arg name="trajectory_update_rate" default="4"/> -->
+   <!-- <arg name="trajectory_publish_rate" default="0.25"/> -->
+  
+  <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server" output="screen">
+    <param name="target_frame_name" type="string" value="/base_link" />
+    <param name="source_frame_name" type="string" value="$(arg trajectory_source_frame_name)" />
+    <param name="trajectory_update_rate" type="double" value="$(arg trajectory_update_rate)" />
+    <param name="trajectory_publish_rate" type="double" value="$(arg trajectory_publish_rate)" />
+  </node>
+
+
+  <node pkg="achilles_qr_detector" type="geotiff_node" name="achilles_geotiff_node" output="screen" launch-prefix="nice -n 15">
+    <remap from="map" to="/dynamic_map" />
+    
+    <!--path for saving map-->
+    <param name="map_file_path" type="string" value="$(find achilles_qr_detector)/maps" />
+    
+    <param name="map_file_base_name" type="string" value="achilles_map" />
+    
+    <!--time interval for saving map-->
+    <param name="geotiff_save_period" type="double" value="10" />
+    <param name="draw_background_checkerboard" type="bool" value="true" />
+    <param name="draw_free_space_grid" type="bool" value="true" />
+    <param name="plugins" type="string" value="hector_geotiff_plugins/TrajectoryMapWriter" />
+  </node>
+
+
+ <!--  <node pkg="hector_geotiff" type="geotiff_node" name="hector_geotiff_node" output="screen" launch-prefix="nice -n 15">
+  <remap from="map" to="/dynamic_map" />
+  <param name="map_file_path" type="string" value="/home/babak/Desktop/maps" />
+  <param name="map_file_base_name" type="string" value="uprobotics" />
+  <param name="geotiff_save_period" type="double" value="0" />
+  <param name="draw_background_checkerboard" type="bool" value="true" />
+  <param name="draw_free_space_grid" type="bool" value="true" />
+  </node> -->
+
+   <remap from="/forwad/Qr_String" to="Qr_String"/>
+   <node name="forwad" pkg="achilles_qr_detector" type="QR_Detection_node" output="screen">
+     <param name="camera_index_1" value= "1" />
+     <!-- <param name="camera_index_2" value= "2" /> -->
+     <!-- <param name="camera_index_3" value= "3" /> -->
+     <param name="fps" value= "60" />
+     <param name="show" value= "true" />
+   </node>
+   <remap from="/forwad2/Qr_String" to="Qr_String"/>
+   <node name="forwad2" pkg="achilles_qr_detector" type="QR_Detection_node" output="screen">
+
+   <param name="camera_index_1" value= "2" />
+   <!-- <param name="camera_index_2" value= "2" /> -->
+   <!-- <param name="camera_index_3" value= "3" /> -->
+   <param name="fps" value= "60" />
+   <param name="show" value= "true" />
+   </node>
+      <!-- <remap from="/forwad3/Qr_String" to="Qr_String"/> -->
+   <!-- <node name="forwad3" pkg="achilles_qr_detector" type="QR_Detection_node" output="screen">
+   <param name="camera_index_1" value= "3" />
+   <param name="fps" value= "60" />
+   <param name="show" value= "true" />
+   </node> -->
+   <node pkg="achilles_controller" type="achilles_controller_node" name="achilles_controller" output="screen"/>
+  <!--   <node pkg="achilles_navigation" type="achilles_navigation_node" name="achilles_navigation" output="screen">
+      <rosparam file="$(find achilles_navigation)/config/costmap_common_params.yaml" command="load" ns=""/>
+      <rosparam file="$(find achilles_navigation)/config/global_costmap_params.yaml" command="load" ns=""/> -->
+   <!-- </node> -->
+<!-- 7 -->
+<!--    <node pkg="achilles_image_transport" type="image_transport_node" name="achilles_image_transport" output="screen">
+   </node> -->
+<!--    <node pkg="achilles_victim_tracker" type="victim_tracker_node" name="achilles_victim_tracker" output="screen">
+   </node> -->
+</launch>
